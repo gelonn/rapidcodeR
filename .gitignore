@@ -1,0 +1,9 @@
+.Rproj.user
+
+# Environment variables (contains API keys)
+.Renviron
+.Rhistory
+.RData
+.httr-oauth
+.DS_Store
+.quarto

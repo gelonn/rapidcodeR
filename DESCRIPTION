@@ -1,0 +1,26 @@
+Package: rapidcodeR
+Title: RapidCodeR - Optimized Data Analysis System for AI-Based Text Processing
+Version: 0.1.0
+Authors@R: 
+    person("Gabriel", "Lönn", , "gablon@prio.org", role = c("aut", "cre"))
+Description: A high-performance R package for extracting machine-readable variables 
+    from natural language text using AI APIs. Optimized for speed and cost efficiency 
+    through parallel processing and direct CSV-formatted responses from language models. 
+    Supports both OpenAI GPT and GROQ AI services with robust error handling and 
+    automatic retry mechanisms for failed extractions.
+License: MIT
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports:
+    stringr,
+    openai,
+    groqR,
+    dplyr,
+    rlang,
+    parallel,
+    future,
+    future.apply
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

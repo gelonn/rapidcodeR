@@ -1,0 +1,22 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/reference/ask_groq.html</loc></url>
+<url><loc>/reference/ask_openai.html</loc></url>
+<url><loc>/reference/calculate_overlap.html</loc></url>
+<url><loc>/reference/gpt_func.html</loc></url>
+<url><loc>/reference/groq_func.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/main_func.html</loc></url>
+<url><loc>/reference/make_value_row.html</loc></url>
+<url><loc>/reference/missingness_func.html</loc></url>
+<url><loc>/reference/parallel_execute.html</loc></url>
+<url><loc>/reference/rapidcodeR-package.html</loc></url>
+<url><loc>/reference/set_api_specs.html</loc></url>
+<url><loc>/reference/set_coding_instruction.html</loc></url>
+<url><loc>/reference/set_parameters.html</loc></url>
+<url><loc>/reference/track_progress.html</loc></url>
+</urlset>
+
