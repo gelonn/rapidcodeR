@@ -1,2 +1,8 @@
 ^ODAS\.package\.Rproj$
 ^\.Rproj\.user$
+^\.Rd2pdf
+^\.Rhistory$
+^\.RData$
+^\.Rdata$
+^desktop\.ini$
+^myWorkspace\.RDataTmp$

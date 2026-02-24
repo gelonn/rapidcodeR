@@ -23,4 +23,5 @@ Imports:
     future.apply
 Suggests: 
     testthat (>= 3.0.0)
+    irr
 Config/testthat/edition: 3
