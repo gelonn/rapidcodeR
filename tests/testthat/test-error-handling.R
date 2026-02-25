@@ -106,8 +106,12 @@ test_that("Error handling tests for rapidcodeR", {
     "provider must be either 'OpenAI' or 'Groq'"
   )
 
-  # Test 5: Missing coding instruction
+  # Test 5: Missing coding instruction (skip on CI when no API key: API test runs first and fails)
   cat("\nTesting missing coding instruction...\n")
+  testthat::skip_if(
+    nchar(Sys.getenv("OPENAI_API_KEY")) == 0,
+    "OpenAI API key not set; cannot test coding instruction error path"
+  )
 
   # Set valid API config but clear coding instruction
   set_api_specs(provider = "OpenAI", model = "gpt-3.5-turbo", temp = 0.3,

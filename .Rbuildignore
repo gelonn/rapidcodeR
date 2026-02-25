@@ -6,3 +6,6 @@
 ^\.Rdata$
 ^desktop\.ini$
 ^myWorkspace\.RDataTmp$
+^\.github$
+^docs$
+^rapidcodeR\.Rproj$

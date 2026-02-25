@@ -64,8 +64,8 @@ library(rapidcodeR)
 # 1. Set up API specifications
 set_api_specs(provider = "OpenAI", model = "gpt-4", temp = 0.7, api_key = "your_openai_key")
 
-# 2. Configure processing parameters (optional, default is 9 variables, ID in column 1, text in column 2)
-set_parameters(n_variables = 4, id_column = 1, text_column = 2, sep = ",")  # Extract 4 variables, ID in column 1, text in column 2, comma separator
+# 2. Configure processing parameters (optional)
+set_parameters(n_variables = 4, id_column = 1, text_column = 2, sep = ",")
 
 # 3. Define what to extract
 instruction <- paste(

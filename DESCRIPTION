@@ -8,7 +8,7 @@ Description: A high-performance R package for extracting machine-readable variab
     through parallel processing and direct CSV-formatted responses from language models. 
     Supports both OpenAI GPT and GROQ AI services with robust error handling and 
     automatic retry mechanisms for failed extractions.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3

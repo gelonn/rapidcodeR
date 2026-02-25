@@ -41,11 +41,12 @@
 #' run1 <- parallel_execute(my_data, slicing_n = 100, cores = 4)
 #' run2 <- parallel_execute(my_data, slicing_n = 100, cores = 4)
 #' # Switch to GROQ for comparison
-#' set_api_specs(provider = "Groq", model = "llama-3.3-70b-versatile", temp = 0.3, api_key = "your_groq_key")
+#' set_api_specs(provider = "Groq", model = "llama-3.3-70b-versatile",
+#'   temp = 0.3, api_key = "your_groq_key")
 #' run3 <- parallel_execute(my_data, slicing_n = 100, cores = 4)
 #' 
 #' overlap_scores <- calculate_overlap(list(run1, run2, run3))
-#' # Returns vector like: c(Var1 = 85.6, Var2 = 92.1, Var3 = 78.3, Var4 = 89.7, Var5 = 91.2, Var6 = 86.8)
+#' # Returns vector like: c(Var1 = 85.6, Var2 = 92.1, ...)
 #' }
 #'
 #' @seealso [parallel_execute()]

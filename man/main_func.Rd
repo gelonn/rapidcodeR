@@ -40,7 +40,8 @@ The function expects responses with exactly N columns as set by set_parameters()
 }
 \examples{
 \dontrun{
-instruction <- "Extract variables: var1,var2,var3,var4,var5,var6"  # for set_parameters(n_variables = 6)
+# For set_parameters(n_variables = 6):
+instruction <- "Extract variables: var1,var2,var3,var4,var5,var6"
 result <- main_func(
   df = my_data_subset,
   to_code_max_id = 30,

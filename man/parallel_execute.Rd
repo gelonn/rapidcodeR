@@ -81,7 +81,8 @@ results1 <- parallel_execute(
 )
 
 # Switch to GROQ for comparison
-set_api_specs(provider = "Groq", model = "llama-3.3-70b-versatile", temp = 0.3, api_key = "your_groq_key")
+set_api_specs(provider = "Groq", model = "llama-3.3-70b-versatile",
+  temp = 0.3, api_key = "your_groq_key")
 results2 <- parallel_execute(
   test_data = my_data,
   slicing_n = 240,
