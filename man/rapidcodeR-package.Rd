@@ -92,5 +92,10 @@ agreement <- calculate_overlap(list(run1, run2))
 \author{
 \strong{Maintainer}: Gabriel Lönn \email{gablon@prio.org}
 
+Other contributors:
+\itemize{
+  \item Sebastian Schutte (Original code and package idea provided by.) [contributor]
+}
+
 }
 \keyword{internal}

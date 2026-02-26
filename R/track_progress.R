@@ -10,6 +10,9 @@
 #' @param total_tasks Integer. Total number of tasks in the parallel job.
 #' @param n_post Integer. Number of posts to process in each API call.
 #' @param provider Character. AI provider to use, either "OpenAI" or "Groq".
+#' @param worker_env Environment or NULL. When running in a parallel worker, the worker's
+#'   package environment so config (e.g. \code{coding_instruction}, \code{id_column})
+#'   is available. If NULL (default), the package's \code{.package_env} is used.
 #'
 #' @details
 #' The function provides several important features:
@@ -42,7 +45,7 @@
 #'
 #' @seealso [main_func()], [parallel_execute()]
 #' @keywords internal
-track_progress <- function(df, index, total_tasks, n_post, batch_size, provider) {
+track_progress <- function(df, index, total_tasks, n_post, batch_size, provider, worker_env = NULL) {
 
   # Input validation
   if (!is.data.frame(df)) {
@@ -73,7 +76,7 @@ track_progress <- function(df, index, total_tasks, n_post, batch_size, provider)
       # but we were passing (df, max_id, n_post, model)
       # max_id should be to_code_max_id, which should be the number of rows in the dataframe
       to_code_max_id <- nrow(df)
-      result <- main_func(df, to_code_max_id, n_post, provider)
+      result <- main_func(df, to_code_max_id, n_post, provider, worker_env = worker_env)
     }
     else {
       print("Please specify whether provider is 'OpenAI' or 'Groq'")

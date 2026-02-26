@@ -4,7 +4,15 @@
 \alias{track_progress}
 \title{Track Progress of Parallel Processing Tasks}
 \usage{
-track_progress(df, index, total_tasks, n_post, batch_size, provider)
+track_progress(
+  df,
+  index,
+  total_tasks,
+  n_post,
+  batch_size,
+  provider,
+  worker_env = NULL
+)
 }
 \arguments{
 \item{df}{Data frame. A subset of data to process in this task.}
@@ -16,6 +24,10 @@ track_progress(df, index, total_tasks, n_post, batch_size, provider)
 \item{n_post}{Integer. Number of posts to process in each API call.}
 
 \item{provider}{Character. AI provider to use, either "OpenAI" or "Groq".}
+
+\item{worker_env}{Environment or NULL. When running in a parallel worker, the worker's
+package environment so config (e.g. \code{coding_instruction}, \code{id_column})
+is available. If NULL (default), the package's \code{.package_env} is used.}
 }
 \value{
 Data frame with successfully processed results from \code{main_func()},

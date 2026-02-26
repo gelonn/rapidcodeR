@@ -157,39 +157,23 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
     result_list <- future_lapply(seq_along(missing_list), function(i, track_progress, main_func, gpt_func,
                                                                   groq_func, ask_openai, ask_groq) {
 
-      # Create a local package environment for this worker with the necessary variables
-      .package_env <- new.env(parent = emptyenv())
-      assign("coding_instruction", coding_instruction, envir = .package_env)
-      assign("n_variables", n_variables, envir = .package_env)
-      assign("id_column", id_column, envir = .package_env)
-      assign("text_column", text_column, envir = .package_env)
-      assign("sep", sep, envir = .package_env)
-      assign("api_provider", api_provider, envir = .package_env)
-      assign("api_model", api_model, envir = .package_env)
-      assign("api_temp", api_temp, envir = .package_env)
-      assign("multi_response", multi_response, envir = .package_env)
+      # Use this worker's package environment (not the serialized one from the main session)
+      worker_env <- get(".package_env", envir = asNamespace("rapidcodeR"))
+      assign("coding_instruction", coding_instruction, envir = worker_env)
+      assign("n_variables", n_variables, envir = worker_env)
+      assign("id_column", id_column, envir = worker_env)
+      assign("text_column", text_column, envir = worker_env)
+      assign("sep", sep, envir = worker_env)
+      assign("api_provider", api_provider, envir = worker_env)
+      assign("api_model", api_model, envir = worker_env)
+      assign("api_temp", api_temp, envir = worker_env)
+      assign("multi_response", multi_response, envir = worker_env)
+      if (provider == "Groq" && exists("GROQ_API_KEY", envir = .package_env)) {
+        assign("GROQ_API_KEY", get("GROQ_API_KEY", envir = .package_env), envir = worker_env)
+      }
 
-      # Also set them in the global environment as a backup
-      assign("coding_instruction", coding_instruction, envir = globalenv())
-      assign("n_variables", n_variables, envir = globalenv())
-      assign("id_column", id_column, envir = globalenv())
-      assign("text_column", text_column, envir = globalenv())
-      assign("sep", sep, envir = globalenv())
-      assign("api_provider", api_provider, envir = globalenv())
-      assign("api_model", api_model, envir = globalenv())
-      assign("api_temp", api_temp, envir = globalenv())
-      assign("multi_response", multi_response, envir = globalenv())
-
-      # Also set functions in global environment as backup
-      assign("track_progress", track_progress, envir = globalenv())
-      assign("main_func", main_func, envir = globalenv())
-      assign("gpt_func", gpt_func, envir = globalenv())
-      assign("groq_func", groq_func, envir = globalenv())
-      assign("ask_openai", ask_openai, envir = globalenv())
-      assign("ask_groq", ask_groq, envir = globalenv())
-
-      # Use the function from the package environment
-      track_progress(missing_list[[i]], i, length(missing_list), n_post, nrow(missing_list[[i]]), provider)
+      # Pass worker env so track_progress -> main_func -> gpt_func/groq_func use it
+      track_progress(missing_list[[i]], i, length(missing_list), n_post, nrow(missing_list[[i]]), provider, worker_env = worker_env)
     }, future.seed = TRUE, future.globals = list(
       `%>%` = `%>%`,
       filter = dplyr::filter,
@@ -198,7 +182,13 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
       distinct = dplyr::distinct,
       bind_rows = dplyr::bind_rows,
       sym = rlang::sym,
-      str_remove = stringr::str_remove
+      str_remove = stringr::str_remove,
+      track_progress = track_progress,
+      main_func = main_func,
+      gpt_func = gpt_func,
+      groq_func = groq_func,
+      ask_openai = ask_openai,
+      ask_groq = ask_groq
     ),
       track_progress = track_progress,
       main_func = main_func,

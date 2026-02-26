@@ -4,7 +4,7 @@
 \alias{main_func}
 \title{Main Text Processing Function for AI-Based Variable Extraction}
 \usage{
-main_func(df, to_code_max_id, n_post, provider)
+main_func(df, to_code_max_id, n_post, provider, worker_env = NULL)
 }
 \arguments{
 \item{df}{Data frame. Input data subset containing text to be processed.}
@@ -14,6 +14,9 @@ main_func(df, to_code_max_id, n_post, provider)
 \item{n_post}{Integer. Number of posts to process per API call (typically 15).}
 
 \item{provider}{Character. AI provider to use, either "OpenAI" or "Groq".}
+
+\item{worker_env}{Environment or NULL. When running in a parallel worker, the worker's
+package environment. If NULL (default), \code{.package_env} is used.}
 }
 \value{
 List of data frames. Each element contains successfully processed results

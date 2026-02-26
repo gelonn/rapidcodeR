@@ -4,7 +4,7 @@
 \alias{groq_func}
 \title{Process Text Data Using GROQ AI API}
 \usage{
-groq_func(data_subset, n_post, coding_instruction)
+groq_func(data_subset, n_post, coding_instruction, worker_env = NULL)
 }
 \arguments{
 \item{data_subset}{Data frame. Subset of text data to process. Must contain
@@ -14,6 +14,9 @@ columns specified by \code{id_column} and \code{text_column} parameters (set via
 
 \item{coding_instruction}{Character. Instructions for the AI model specifying
 how to extract and format variables from the text.}
+
+\item{worker_env}{Environment or NULL. When running in a parallel worker, the worker's
+package environment. If NULL (default), \code{.package_env} is used.}
 }
 \value{
 Data frame. Each row contains the AI's response for one post,

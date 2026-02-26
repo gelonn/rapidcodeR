@@ -13,6 +13,8 @@
 #' @param n_post Integer. Number of posts to process in this batch.
 #' @param coding_instruction Character. Instructions for the AI model specifying
 #'   how to extract and format variables from the text.
+#' @param worker_env Environment or NULL. When running in a parallel worker, the worker's
+#'   package environment. If NULL (default), \code{.package_env} is used.
 #'
 #' @details
 #' The function performs several optimizations:
@@ -47,7 +49,9 @@
 #' @seealso [ask_openai()], [groq_func()]
 #' @keywords internal
 
-gpt_func <- function(data_subset, n_post, coding_instruction) {
+gpt_func <- function(data_subset, n_post, coding_instruction, worker_env = NULL) {
+
+  env <- if (is.null(worker_env)) .package_env else worker_env
 
   # Use all rows in the pre-sampled data subset
   posts <- data_subset
@@ -55,8 +59,8 @@ gpt_func <- function(data_subset, n_post, coding_instruction) {
   initial_count <- nrow(posts)
 
   # Get column parameters from package environment
-  id_column <- get("id_column", envir = globalenv())
-  text_column <- get("text_column", envir = globalenv())
+  id_column <- get("id_column", envir = env)
+  text_column <- get("text_column", envir = env)
 
   # Get column names for easier reference (data_subset has internal_id already removed by main_func)
   id_col_name <- names(posts)[id_column]
@@ -76,14 +80,14 @@ gpt_func <- function(data_subset, n_post, coding_instruction) {
   }
 
   # Get expected number of variables and separator
-  n_variables <- if (exists("n_variables", envir = globalenv())) {
-    get("n_variables", envir = globalenv())
+  n_variables <- if (exists("n_variables", envir = env)) {
+    get("n_variables", envir = env)
   } else {
     9  # Default fallback
   }
 
-  sep <- if (exists("sep", envir = globalenv())) {
-    get("sep", envir = globalenv())
+  sep <- if (exists("sep", envir = env)) {
+    get("sep", envir = env)
   } else {
     ";"  # Default fallback
   }
@@ -100,11 +104,9 @@ gpt_func <- function(data_subset, n_post, coding_instruction) {
     gpt_posts <- paste(gpt_posts, posts[[id_col_name]][i], sep, posts[[text_col_name]][i])
   }
 
-  #Extract the temperature and model name
-
-  api_model <- get("api_model", envir = globalenv())
-
-  api_temp <- get("api_temp", envir = globalenv())
+  # Extract the temperature and model name from package environment
+  api_model <- get("api_model", envir = env)
+  api_temp <- get("api_temp", envir = env)
 
   gpt_prompt <- paste(coding_instruction, gpt_posts)
 

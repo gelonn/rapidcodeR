@@ -12,6 +12,8 @@
 #' @param to_code_max_id Integer. Maximum number of posts to process in this batch.
 #' @param n_post Integer. Number of posts to process per API call (typically 15).
 #' @param provider Character. AI provider to use, either "OpenAI" or "Groq".
+#' @param worker_env Environment or NULL. When running in a parallel worker, the worker's
+#'   package environment. If NULL (default), \code{.package_env} is used.
 #'
 #' @details
 #' The function implements a robust processing loop that:
@@ -45,7 +47,9 @@
 #'
 #' @seealso [gpt_func()], [groq_func()], [make_value_row()]
 #' @export
-main_func <- function(df, to_code_max_id, n_post, provider) {
+main_func <- function(df, to_code_max_id, n_post, provider, worker_env = NULL) {
+
+  env <- if (is.null(worker_env)) .package_env else worker_env
 
   # Input validation
   if (!is.data.frame(df)) {
@@ -53,8 +57,8 @@ main_func <- function(df, to_code_max_id, n_post, provider) {
   }
 
   # Get column parameters from package environment
-  id_column <- get("id_column", envir = globalenv())
-  text_column <- get("text_column", envir = globalenv())
+  id_column <- get("id_column", envir = env)
+  text_column <- get("text_column", envir = env)
 
   # Validate that the specified columns exist
   if (id_column > ncol(df)) {
@@ -87,9 +91,9 @@ main_func <- function(df, to_code_max_id, n_post, provider) {
     stop("provider must be either 'OpenAI' or 'Groq'")
   }
 
-  # Get multi_response from global environment
-  multi_response <- if (exists("multi_response", envir = globalenv())) {
-    get("multi_response", envir = globalenv())
+  # Get multi_response from package environment
+  multi_response <- if (exists("multi_response", envir = env)) {
+    get("multi_response", envir = env)
   } else {
     FALSE  # Default fallback
   }
@@ -103,9 +107,9 @@ main_func <- function(df, to_code_max_id, n_post, provider) {
     stop("multi_response = TRUE can only be used with n_post = 1")
   }
 
-  coding_instruction <- get("coding_instruction", envir = globalenv())
+  coding_instruction <- get("coding_instruction", envir = env)
 
-  n_variables <- as.numeric(get("n_variables", envir = globalenv()))
+  n_variables <- as.numeric(get("n_variables", envir = env))
 
   `%!in%` <- Negate(`%in%`)
 
@@ -138,9 +142,9 @@ main_func <- function(df, to_code_max_id, n_post, provider) {
 
       # Process with API
       if (provider == "OpenAI") {
-        result_df <- gpt_func(data_for_api, n_post, coding_instruction)
+        result_df <- gpt_func(data_for_api, n_post, coding_instruction, worker_env = worker_env)
       } else if (provider == "Groq") {
-        result_df <- groq_func(data_for_api, n_post, coding_instruction)
+        result_df <- groq_func(data_for_api, n_post, coding_instruction, worker_env = worker_env)
       }
 
 
