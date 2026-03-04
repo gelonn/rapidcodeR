@@ -36,21 +36,6 @@
 #'   or NULL if no missing data was recovered. The function also outputs
 #'   debugging information about filtered posts with 4 or fewer characters.
 #'
-#' @examples
-#' \dontrun{
-#' # After initial parallel processing
-#' missing_ids <- c(101, 205, 312)
-#'
-#' recovered_data <- missingness_func(
-#'   subset_trial = original_data,
-#'   missing_ids = missing_ids,
-#'   n_post = 15,
-#'   cores = 4,
-#'   provider = "OpenAI",
-#'   multi_core = FALSE,
-#' )
-#' }
-#'
 #' @seealso [parallel_execute()], [track_progress()]
 #' @keywords internal
 missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider, multi_core = TRUE) {

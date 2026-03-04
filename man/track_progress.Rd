@@ -51,20 +51,6 @@ The function provides several important features:
 This function is primarily used internally by the parallel processing
 framework and calls \code{main_func()} with the \code{n_post} parameter passed by the caller.
 }
-\examples{
-\dontrun{
-# Typically called from within parallel_execute or missingness_func
-result <- track_progress(
-  df = data_batch,
-  index = 2,
-  total_tasks = 8,
-  n_post = 15,
-  batch_size = 30,
-  provider = "OpenAI",
-)
-}
-
-}
 \seealso{
 \code{\link[=main_func]{main_func()}}, \code{\link[=parallel_execute]{parallel_execute()}}
 }

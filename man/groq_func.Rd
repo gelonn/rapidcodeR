@@ -41,19 +41,6 @@ The function performs several optimizations:
 The function expects the AI to return one line per input post in CSV format.
 Trailing semicolons are automatically removed from the response.
 }
-\examples{
-\dontrun{
-# Assume set_parameters(id_column = 1, text_column = 2) has been called
-data_subset <- data.frame(
-  id = 1:3,
-  text = c("Happy day!", "Feeling sad today", "Great weather")
-)
-instruction <- "Classify sentiment: id,sentiment"
-
-codings <- groq_func(data_subset, 3, instruction)
-}
-
-}
 \seealso{
 \code{\link[=ask_groq]{ask_groq()}}, \code{\link[=gpt_func]{gpt_func()}}
 }

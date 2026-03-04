@@ -5,11 +5,11 @@ Authors@R: c(
     person("Gabriel", "Lönn", , "gablon@prio.org", role = c("aut", "cre")),
     person("Sebastian", "Schutte", , role = "ctb", comment = "Original code and package idea provided by.")
     )
-Description: A high-performance R package for extracting machine-readable variables 
-    from natural language text using AI APIs. Optimized for speed and cost efficiency 
-    through parallel processing and direct CSV-formatted responses from language models. 
-    Supports services from multiple AI providers with robust error handling and 
-    automatic retry mechanisms for failed extractions. 
+Description: Extracts machine-readable variables from natural language text using
+    AI APIs. Optimized for speed and cost efficiency through parallel processing
+    and direct CSV-formatted responses from language models. Supports multiple AI
+    providers with robust error handling and automatic retry mechanisms for
+    failed extractions.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

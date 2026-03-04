@@ -51,22 +51,6 @@ The function implements an adaptive retry strategy:
 The function uses future-based parallel processing with automatic cleanup
 and includes timing information for performance monitoring.
 }
-\examples{
-\dontrun{
-# After initial parallel processing
-missing_ids <- c(101, 205, 312)
-
-recovered_data <- missingness_func(
-  subset_trial = original_data,
-  missing_ids = missing_ids,
-  n_post = 15,
-  cores = 4,
-  provider = "OpenAI",
-  multi_core = FALSE,
-)
-}
-
-}
 \seealso{
 \code{\link[=parallel_execute]{parallel_execute()}}, \code{\link[=track_progress]{track_progress()}}
 }

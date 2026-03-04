@@ -42,19 +42,6 @@ The function performs several optimizations:
 The function includes specific error handling for API failures and will return
 NULL if the API returns an error or invalid response.
 }
-\examples{
-\dontrun{
-# Assume set_parameters(id_column = 1, text_column = 2) has been called
-data_subset <- data.frame(
-  id = 1:3,
-  text = c("Happy day!", "Feeling sad today", "Great weather")
-)
-instruction <- "Classify sentiment: id,sentiment"
-
-codings <- gpt_func(data_subset, 3, instruction)
-}
-
-}
 \seealso{
 \code{\link[=ask_openai]{ask_openai()}}, \code{\link[=groq_func]{groq_func()}}
 }

@@ -33,18 +33,6 @@
 #' @return Data frame. Each row contains the AI's response for one post,
 #'   with columns named Var1, Var2, etc. Returns NULL if no posts remain after filtering.
 #'
-#' @examples
-#' \dontrun{
-#' # Assume set_parameters(id_column = 1, text_column = 2) has been called
-#' data_subset <- data.frame(
-#'   id = 1:3,
-#'   text = c("Happy day!", "Feeling sad today", "Great weather")
-#' )
-#' instruction <- "Classify sentiment: id,sentiment"
-#'
-#' codings <- groq_func(data_subset, 3, instruction)
-#' }
-#'
 #' @seealso [ask_groq()], [gpt_func()]
 #' @keywords internal
 groq_func <- function(data_subset, n_post, coding_instruction, worker_env = NULL) {

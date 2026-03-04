@@ -30,19 +30,6 @@
 #' @return Data frame with successfully processed results from `main_func()`,
 #'   or NULL if an error occurs during processing.
 #'
-#' @examples
-#' \dontrun{
-#' # Typically called from within parallel_execute or missingness_func
-#' result <- track_progress(
-#'   df = data_batch,
-#'   index = 2,
-#'   total_tasks = 8,
-#'   n_post = 15,
-#'   batch_size = 30,
-#'   provider = "OpenAI",
-#' )
-#' }
-#'
 #' @seealso [main_func()], [parallel_execute()]
 #' @keywords internal
 track_progress <- function(df, index, total_tasks, n_post, batch_size, provider, worker_env = NULL) {
