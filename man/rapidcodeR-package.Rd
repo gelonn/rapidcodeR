@@ -11,6 +11,12 @@ natural language text using AI APIs. The package is optimized for speed and
 cost efficiency through parallel processing and direct CSV-formatted responses
 from language models.
 }
+\section{Funding}{
+
+This work is financed in large part by the Research Council of Norway
+(grant #324931).
+}
+
 \section{Key Features}{
 
 \itemize{

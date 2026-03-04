@@ -5,6 +5,10 @@
 #' cost efficiency through parallel processing and direct CSV-formatted responses
 #' from language models.
 #'
+#' @section Funding:
+#' This work is financed in large part by the Research Council of Norway
+#' (grant #324931).
+#'
 #' @section Key Features:
 #' \itemize{
 #'   \item \strong{Parallel Processing}: Distributes work across multiple CPU cores for maximum speed
