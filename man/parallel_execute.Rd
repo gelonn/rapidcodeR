@@ -11,7 +11,8 @@ parallel_execute(
   cores = 8,
   seed = NULL,
   multi_core = FALSE,
-  benchmarking = FALSE
+  benchmarking = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -36,6 +37,9 @@ sampling is random. If set to a number, ensures identical datasets across runs.}
 
 \item{benchmarking}{Logical. If TRUE, returns processing time in seconds instead of
 the result data frame. Default is FALSE.}
+
+\item{verbose}{Logical. If TRUE (default), progress and status messages are
+printed via \code{message()}. If FALSE, such messages are suppressed.}
 }
 \value{
 Data frame. Processed results containing extracted variables,

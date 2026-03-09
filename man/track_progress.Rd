@@ -11,7 +11,8 @@ track_progress(
   n_post,
   batch_size,
   provider,
-  worker_env = NULL
+  worker_env = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ track_progress(
 \item{worker_env}{Environment or NULL. When running in a parallel worker, the worker's
 package environment so config (e.g. \code{coding_instruction}, \code{id_column})
 is available. If NULL (default), the package's \code{.package_env} is used.}
+
+\item{verbose}{Logical. If TRUE (default), progress messages are shown. If FALSE, suppressed.}
 }
 \value{
 Data frame with successfully processed results from \code{main_func()},

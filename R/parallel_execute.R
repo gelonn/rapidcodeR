@@ -26,6 +26,8 @@
 #'   (works on all platforms including Windows).
 #' @param benchmarking Logical. If TRUE, returns processing time in seconds instead of
 #'   the result data frame. Default is FALSE.
+#' @param verbose Logical. If TRUE (default), progress and status messages are
+#'   printed via \code{message()}. If FALSE, such messages are suppressed.
 #'
 #' @details
 #' The function implements a multi-stage parallel processing workflow:
@@ -87,7 +89,8 @@ parallel_execute <- function(test_data,
                              cores = 8,
                              seed = NULL,
                              multi_core = FALSE,
-                             benchmarking = FALSE) {
+                             benchmarking = FALSE,
+                             verbose = TRUE) {
 
   # Input validation
   if (!is.data.frame(test_data)) {
@@ -167,15 +170,12 @@ parallel_execute <- function(test_data,
   extra_posts <- total_posts %% cores
 
   if (extra_posts > 0) {
-
-  cat("- First", extra_posts, "batches will have", base_batch_size + 1, "posts each\n")
-
-  cat("- Remaining", cores - extra_posts, "batches will have", base_batch_size, "posts each\n")
-
+    if (verbose) {
+      message("- First ", extra_posts, " batches will have ", base_batch_size + 1, " posts each")
+      message("- Remaining ", cores - extra_posts, " batches will have ", base_batch_size, " posts each")
+    }
   } else {
-
-    cat("All", cores, "batches will have", base_batch_size, "posts each\n")
-
+    if (verbose) message("All ", cores, " batches will have ", base_batch_size, " posts each")
   }
 
   #Making sure slicing_n is not greater than the number of rows in test_data
@@ -186,7 +186,7 @@ parallel_execute <- function(test_data,
   if (provider == "OpenAI") {
     test_answer <- ask_openai("What is the capital of Norway?")
     if (!is.na(test_answer)) {
-      cat("There are credits in the account!\n")
+      if (verbose) message("There are credits in the account!")
     } else {
       stop("OpenAI API test failed. Please check your API key and internet connection.")
     }
@@ -194,7 +194,7 @@ parallel_execute <- function(test_data,
     test_answer <- ask_groq("What is the capital of Norway?", temp = api_temp,
                             model = api_model, api_key = get("GROQ_API_KEY", envir = .package_env))
     if (!is.na(test_answer)) {
-      cat("There are credits in the account!\n")
+      if (verbose) message("There are credits in the account!")
     } else {
       stop("GROQ API test failed. Please check your API key and internet connection.")
     }
@@ -224,7 +224,7 @@ parallel_execute <- function(test_data,
     filter(nchar(!!sym(internal_text_col_name)) > 4)
   filtered_count <- original_count - nrow(filtered_data)
 
-  cat("Filtered out", filtered_count, "posts with 4 or fewer characters\n")
+  if (verbose) message("Filtered out ", filtered_count, " posts with 4 or fewer characters")
 
   # Check if we have any data left after filtering
   if (nrow(filtered_data) == 0) {
@@ -322,7 +322,7 @@ parallel_execute <- function(test_data,
 
     # Pass the data and worker env explicitly to track_progress
     # Note: nrow(df_list[[i]]) is the batch size, n_post is the API call size
-    track_progress(df_list[[i]], i, length(df_list), n_post, nrow(df_list[[i]]), provider, worker_env = worker_env)
+    track_progress(df_list[[i]], i, length(df_list), n_post, nrow(df_list[[i]]), provider, worker_env = worker_env, verbose = verbose)
 
   }, future.seed = TRUE, future.globals = list(
     `%>%` = `%>%`,
@@ -338,7 +338,8 @@ parallel_execute <- function(test_data,
     gpt_func = gpt_func,
     groq_func = groq_func,
     ask_openai = ask_openai,
-    ask_groq = ask_groq
+    ask_groq = ask_groq,
+    verbose = verbose
   ),
     track_progress = track_progress,
     main_func = main_func,
@@ -447,8 +448,8 @@ parallel_execute <- function(test_data,
         duplicates_before <- nrow(test_dfs)
         test_dfs <- test_dfs %>% distinct(.data[[first_col_temp]], .keep_all = TRUE)
         duplicates_removed <- duplicates_before - nrow(test_dfs)
-        if (duplicates_removed > 0) {
-          cat("Removed", duplicates_removed, "duplicate rows from initial results\n")
+        if (duplicates_removed > 0 && verbose) {
+          message("Removed ", duplicates_removed, " duplicate rows from initial results")
         }
       }
     } else {
@@ -456,7 +457,7 @@ parallel_execute <- function(test_data,
     }
   }
 
-  cat("Initial results have", nrow(test_dfs), "rows\n")
+  if (verbose) message("Initial results have ", nrow(test_dfs), " rows")
 
   # Compare processed results with original IDs to find missing ones
   if (nrow(test_dfs) > 0) {
@@ -466,28 +467,29 @@ parallel_execute <- function(test_data,
     # This prevents duplicate IDs from affecting the count of processed vs missing IDs
     processed_ids <- unique(as.numeric(test_dfs[[first_col]]))
     missing_ids <- all_processed_ids[!all_processed_ids %in% processed_ids]
-    cat("Unique processed IDs:", length(processed_ids), "\n")
-    cat("Missing IDs after parallel processing:", length(missing_ids), "\n")
-
+    if (verbose) {
+      message("Unique processed IDs: ", length(processed_ids))
+      message("Missing IDs after parallel processing: ", length(missing_ids))
+    }
     # Only call missingness_func if there are missing IDs
     if (length(missing_ids) > 0) {
-      cat("Attempting to recover", length(missing_ids), "missing IDs\n")
+      if (verbose) message("Attempting to recover ", length(missing_ids), " missing IDs")
       restored_dfs <- missingness_func(subset_trial, missing_ids, n_post, cores,
-                                       provider, multi_core)
+                                       provider, multi_core, verbose = verbose)
     } else {
       restored_dfs <- NULL
-      cat("No missing IDs to recover\n")
+      if (verbose) message("No missing IDs to recover")
     }
   } else {
     # If no results at all, all IDs are missing
     missing_ids <- all_processed_ids
-    cat("No results from parallel processing. Attempting to recover all", length(missing_ids), "IDs\n")
-    restored_dfs <- missingness_func(subset_trial, missing_ids, n_post, cores, provider, multi_core)
+    if (verbose) message("No results from parallel processing. Attempting to recover all ", length(missing_ids), " IDs")
+    restored_dfs <- missingness_func(subset_trial, missing_ids, n_post, cores, provider, multi_core, verbose = verbose)
   }
 
   process_time <- round(as.numeric(difftime(Sys.time(),  test_start, units = "secs")), 2)
 
-  print(paste0("The processing took ", process_time, " seconds!"))
+  if (verbose) message("The processing took ", process_time, " seconds!")
 
   # Memory management: force garbage collection after recovery processing
   gc()
@@ -503,8 +505,7 @@ parallel_execute <- function(test_data,
     restored_dfs[[first_col_restored]] <- as.character(restored_dfs[[first_col_restored]])
 
     all_data <- bind_rows(test_dfs, restored_dfs)
-    cat("Recovered", nrow(restored_dfs), "additional rows\n")
-
+    if (verbose) message("Recovered ", nrow(restored_dfs), " additional rows")
     # Deduplicate after combining restored results only when multi_response=FALSE
     # (when multi_response=TRUE, multiple rows per ID are intentional)
     if (nrow(all_data) > 0 && !multi_response) {
@@ -512,16 +513,16 @@ parallel_execute <- function(test_data,
       duplicates_before_combine <- nrow(all_data)
       all_data <- all_data %>% distinct(.data[[first_col_all]], .keep_all = TRUE)
       duplicates_removed_combine <- duplicates_before_combine - nrow(all_data)
-      if (duplicates_removed_combine > 0) {
-        cat("Removed", duplicates_removed_combine, "duplicate rows after combining restored results\n")
+      if (duplicates_removed_combine > 0 && verbose) {
+        message("Removed ", duplicates_removed_combine, " duplicate rows after combining restored results")
       }
     }
   } else {
     all_data <- test_dfs
-    cat("No additional rows recovered\n")
+    if (verbose) message("No additional rows recovered")
   }
 
-  cat("Before final processing:", nrow(all_data), "rows\n")
+  if (verbose) message("Before final processing: ", nrow(all_data), " rows")
 
   # Sort by internal_id (first column) before removing it
   if (ncol(all_data) > 0) {
@@ -546,8 +547,10 @@ parallel_execute <- function(test_data,
     output <- output[, setdiff(names(output), cols_to_drop)]
   }
 
-  cat("After processing:", nrow(output), "rows\n")
-  cat("Total posts with 4 or fewer characters filtered out:", filtered_count, "\n")
+  if (verbose) {
+    message("After processing: ", nrow(output), " rows")
+    message("Total posts with 4 or fewer characters filtered out: ", filtered_count)
+  }
 
   if(benchmarking == FALSE) {
     return(output)

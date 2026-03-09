@@ -57,11 +57,11 @@ groq_func <- function(data_subset, n_post, coding_instruction, worker_env = NULL
 
   filtered_count <- nrow(posts)
   if (initial_count != filtered_count) {
-    cat("Filtered out", initial_count - filtered_count, "posts with < 4 characters\n")
+    message("Filtered out ", initial_count - filtered_count, " posts with < 4 characters")
   }
 
   if (nrow(posts) == 0) {
-    print("No posts left to process, breaking loop.")
+    message("No posts left to process, breaking loop.")
     return(NULL)
   }
 

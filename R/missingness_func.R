@@ -15,6 +15,7 @@
 #' @param cores Integer. Number of CPU cores available for parallel processing.
 #' @param provider Character. AI provider to use, either "OpenAI" or "Groq".
 #' @param multi_core Logical. If TRUE, uses multicore backend for parallel processing. If FALSE, uses multisession backend.
+#' @param verbose Logical. If TRUE (default), progress and status messages are shown via \code{message()}. If FALSE, suppressed.
 #'
 #' @details
 #' It continues until the number of missing items is reduced to a manageable level.
@@ -38,7 +39,7 @@
 #'
 #' @seealso [parallel_execute()], [track_progress()]
 #' @keywords internal
-missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider, multi_core = TRUE) {
+missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider, multi_core = TRUE, verbose = TRUE) {
 
   # Start timing
   test_start <- Sys.time()
@@ -91,7 +92,7 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
   api_temp <- get("api_temp", envir = .package_env)
   multi_response <- get("multi_response", envir = .package_env)
 
-  cat("Starting recovery for", length(missing_ids), "missing IDs\n")
+  if (verbose) message("Starting recovery for ", length(missing_ids), " missing IDs")
 
   missing_data <- subset_trial %>%
     filter(!!sym(id_col_name) %in% missing_ids) %>%
@@ -102,13 +103,13 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
   missing_data <- missing_data %>%
     filter(nchar(!!sym(text_col_name)) > 4)
   filtered_count <- original_count - nrow(missing_data)
-  cat("Filtered out", filtered_count, "posts with 4 or fewer characters in recovery\n")
+  if (verbose) message("Filtered out ", filtered_count, " posts with 4 or fewer characters in recovery")
 
-  cat("Found", nrow(missing_data), "rows to recover\n")
+  if (verbose) message("Found ", nrow(missing_data), " rows to recover")
 
   # If no data found, return NULL
   if (nrow(missing_data) == 0) {
-    cat("No data found for missing IDs after filtering\n")
+    if (verbose) message("No data found for missing IDs after filtering")
     return(NULL)
   }
 
@@ -118,7 +119,7 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
   # Run recovery iterations until fewer than 15 rows remain
   while(nrow(missing_data) > 15) {
 
-    cat("Processing recovery batch of", nrow(missing_data), "rows\n")
+    if (verbose) message("Processing recovery batch of ", nrow(missing_data), " rows")
 
     rep_end <- cores
 
@@ -157,8 +158,8 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
         assign("GROQ_API_KEY", get("GROQ_API_KEY", envir = .package_env), envir = worker_env)
       }
 
-      # Pass worker env so track_progress -> main_func -> gpt_func/groq_func use it
-      track_progress(missing_list[[i]], i, length(missing_list), n_post, nrow(missing_list[[i]]), provider, worker_env = worker_env)
+      # Pass worker env and verbose so track_progress can gate messages
+      track_progress(missing_list[[i]], i, length(missing_list), n_post, nrow(missing_list[[i]]), provider, worker_env = worker_env, verbose = verbose)
     }, future.seed = TRUE, future.globals = list(
       `%>%` = `%>%`,
       filter = dplyr::filter,
@@ -173,7 +174,8 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
       gpt_func = gpt_func,
       groq_func = groq_func,
       ask_openai = ask_openai,
-      ask_groq = ask_groq
+      ask_groq = ask_groq,
+      verbose = verbose
     ),
       track_progress = track_progress,
       main_func = main_func,
@@ -183,7 +185,7 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
       ask_groq = ask_groq
     )
 
-    print(paste0("The recovery took ", round(as.numeric(difftime(Sys.time(),  test_start, units = "secs")), 2), " seconds!"))
+    if (verbose) message("The recovery took ", round(as.numeric(difftime(Sys.time(),  test_start, units = "secs")), 2), " seconds!")
 
     plan(sequential)
 
@@ -253,9 +255,9 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
     failed_tasks <- length(result_list) - length(valid_results)
     if (length(valid_results) == 0) {
       temp_df <- data.frame()  # Create empty data frame
-      cat("No valid results from recovery iteration\n")
+      if (verbose) message("No valid results from recovery iteration")
     } else {
-      if (failed_tasks > 0) {
+      if (failed_tasks > 0 && verbose) {
         message(failed_tasks, " out of ", length(result_list), " missingness recovery tasks failed.")
       }
 
@@ -279,7 +281,7 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
         temp_df <- data.frame()
       }
 
-      cat("Recovered", nrow(temp_df), "rows in this iteration\n")
+      if (verbose) message("Recovered ", nrow(temp_df), " rows in this iteration")
     }
 
     if(exists("restored_dfs")) {
@@ -291,7 +293,7 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
       restored_dfs <- temp_df
     }
 
-    cat("Recovery iteration completed\n")
+    if (verbose) message("Recovery iteration completed")
 
     # Update missing_data for next iteration by removing successfully processed IDs
     if (nrow(temp_df) > 0) {
@@ -309,32 +311,35 @@ missingness_func <- function(subset_trial, missing_ids, n_post, cores, provider,
       iteration_filtered <- original_count - nrow(missing_data)
       total_filtered <- total_filtered + iteration_filtered
 
-      if (iteration_filtered > 0) {
-        cat("Filtered out", iteration_filtered, "additional posts with 4 or fewer characters\n")
+      if (iteration_filtered > 0 && verbose) {
+        message("Filtered out ", iteration_filtered, " additional posts with 4 or fewer characters")
       }
 
-      cat("Remaining rows for next iteration:", nrow(missing_data), "\n")
+      if (verbose) message("Remaining rows for next iteration: ", nrow(missing_data))
     } else {
-      # If no results, break the loop to avoid infinite iteration
-      cat("No results from this iteration, stopping recovery\n")
+      if (verbose) message("No results from this iteration, stopping recovery")
       break
     }
   }
 
   # Check if we stopped because of the threshold
-  if (nrow(missing_data) <= 15 && nrow(missing_data) > 0) {
-    cat("Recovery stopped because only", nrow(missing_data), "rows remain (below threshold of 15)\n")
+  if (nrow(missing_data) <= 15 && nrow(missing_data) > 0 && verbose) {
+    message("Recovery stopped because only ", nrow(missing_data), " rows remain (below threshold of 15)")
   }
 
 
 
   if(exists("restored_dfs") && nrow(restored_dfs) > 0){
-    cat("Recovery completed. Returning", nrow(restored_dfs), "recovered rows\n")
-    cat("Total posts with 4 or fewer characters filtered out in recovery:", total_filtered, "\n")
+    if (verbose) {
+      message("Recovery completed. Returning ", nrow(restored_dfs), " recovered rows")
+      message("Total posts with 4 or fewer characters filtered out in recovery: ", total_filtered)
+    }
     return(restored_dfs)
   } else {
-    cat("Recovery completed. No rows recovered.\n")
-    cat("Total posts with 4 or fewer characters filtered out in recovery:", total_filtered, "\n")
+    if (verbose) {
+      message("Recovery completed. No rows recovered.")
+      message("Total posts with 4 or fewer characters filtered out in recovery: ", total_filtered)
+    }
     return(NULL)
   }
 

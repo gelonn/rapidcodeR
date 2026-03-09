@@ -13,6 +13,7 @@
 #' @param worker_env Environment or NULL. When running in a parallel worker, the worker's
 #'   package environment so config (e.g. \code{coding_instruction}, \code{id_column})
 #'   is available. If NULL (default), the package's \code{.package_env} is used.
+#' @param verbose Logical. If TRUE (default), progress messages are shown. If FALSE, suppressed.
 #'
 #' @details
 #' The function provides several important features:
@@ -32,7 +33,7 @@
 #'
 #' @seealso [main_func()], [parallel_execute()]
 #' @keywords internal
-track_progress <- function(df, index, total_tasks, n_post, batch_size, provider, worker_env = NULL) {
+track_progress <- function(df, index, total_tasks, n_post, batch_size, provider, worker_env = NULL, verbose = TRUE) {
 
   # Input validation
   if (!is.data.frame(df)) {
@@ -56,20 +57,17 @@ track_progress <- function(df, index, total_tasks, n_post, batch_size, provider,
   }
 
   tryCatch({
-    message("Processing task ", index, " out of ", total_tasks)
+    if (verbose) message("Processing task ", index, " out of ", total_tasks)
     Sys.sleep(5)  # 5-second delay to avoid hitting the API too hard
     if(provider %in% c("OpenAI", "Groq")) {
-      # Fix parameter order: main_func expects (df, to_code_max_id, n_post, provider)
-      # but we were passing (df, max_id, n_post, model)
-      # max_id should be to_code_max_id, which should be the number of rows in the dataframe
       to_code_max_id <- nrow(df)
       result <- main_func(df, to_code_max_id, n_post, provider, worker_env = worker_env)
     }
     else {
-      print("Please specify whether provider is 'OpenAI' or 'Groq'")
+      message("Please specify whether provider is 'OpenAI' or 'Groq'")
       stop()
     }
-    message("Finished task ", index)
+    if (verbose) message("Finished task ", index)
     return(result)
   }, error = function(e) {
     message("Error processing task ", index, ": ", e$message)

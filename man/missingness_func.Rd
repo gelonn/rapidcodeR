@@ -10,7 +10,8 @@ missingness_func(
   n_post,
   cores,
   provider,
-  multi_core = TRUE
+  multi_core = TRUE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ missingness_func(
 \item{provider}{Character. AI provider to use, either "OpenAI" or "Groq".}
 
 \item{multi_core}{Logical. If TRUE, uses multicore backend for parallel processing. If FALSE, uses multisession backend.}
+
+\item{verbose}{Logical. If TRUE (default), progress and status messages are shown via \code{message()}. If FALSE, suppressed.}
 }
 \value{
 Data frame. Successfully processed results from the missing data,
