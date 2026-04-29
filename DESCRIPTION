@@ -1,6 +1,6 @@
 Package: rapidcodeR
 Title: Optimized Data Analysis System for AI-Based Text Processing
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Gabriel", "Lönn", , "gablon@prio.org", role = c("aut", "cre")),
     person("Sebastian", "Schutte", , role = "ctb", comment = "Original code and package idea provided by.")
