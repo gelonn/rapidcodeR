@@ -301,7 +301,7 @@ make_value_row <- function(ai_response) {
   ai_response <- gsub("['\"]", "`", ai_response)
 
   # Split into values based on semicolons
-  insert_values <- unlist(strsplit(ai_response, split = separator))
+  insert_values <- unlist(strsplit(ai_response, split = separator, fixed = TRUE))
 
   # Trim whitespace from each entry
   insert_values <- trimws(insert_values)

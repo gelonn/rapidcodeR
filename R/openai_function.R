@@ -81,7 +81,7 @@ gpt_func <- function(data_subset, n_post, coding_instruction, worker_env = NULL)
   }
 
   # Sanitize text content - replace the separator with a colon to avoid conflicts
-  posts[[text_col_name]] <- gsub(sep, ":", posts[[text_col_name]])
+  posts[[text_col_name]] <- gsub(sep, ":", posts[[text_col_name]], fixed = TRUE)
   posts[[text_col_name]] <- gsub("'", "`", posts[[text_col_name]])
   posts[[text_col_name]] <- gsub("\"", "`", posts[[text_col_name]])
 
@@ -125,7 +125,7 @@ gpt_func <- function(data_subset, n_post, coding_instruction, worker_env = NULL)
   for (i in seq_along(codings)) {
     if (!is.na(codings[i]) && codings[i] != "") {
       # Parse the coding line using the dynamic separator
-      values <- unlist(strsplit(codings[i], sep))
+      values <- unlist(strsplit(codings[i], sep, fixed = TRUE))
       values <- trimws(values)
 
       # Ensure we have the expected number of columns

@@ -51,6 +51,7 @@
 #' }
 #'
 #' @seealso [parallel_execute()]
+#' @importFrom stats complete.cases
 #' @export
 calculate_overlap <- function(datasets, alpha = FALSE, key_cols = NULL) {
 

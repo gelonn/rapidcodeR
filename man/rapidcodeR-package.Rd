@@ -96,7 +96,12 @@ agreement <- calculate_overlap(list(run1, run2))
 
 }
 \author{
-\strong{Maintainer}: Gabriel Lönn \email{gablon@prio.org}
+\strong{Maintainer}: Gabriel Lönn \email{g.e.lonn@stv.uio.no}
+
+Authors:
+\itemize{
+  \item Gabriel Lönn \email{g.e.lonn@stv.uio.no}
+}
 
 Other contributors:
 \itemize{

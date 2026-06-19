@@ -2,7 +2,7 @@ Package: rapidcodeR
 Title: Optimized Data Analysis System for AI-Based Text Processing
 Version: 0.1.1
 Authors@R: c(
-    person("Gabriel", "Lönn", , "gablon@prio.org", role = c("aut", "cre")),
+    person("Gabriel", "Lönn", , "g.e.lonn@stv.uio.no", role = c("aut", "cre")),
     person("Sebastian", "Schutte", , role = "ctb", comment = "Original code and package idea provided by.")
     )
 Description: Extracts machine-readable variables from natural language text using
@@ -13,7 +13,6 @@ Description: Extracts machine-readable variables from natural language text usin
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Imports:
     stringr,
     openai,
@@ -27,3 +26,4 @@ Suggests:
     testthat (>= 3.0.0),
     irr
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0

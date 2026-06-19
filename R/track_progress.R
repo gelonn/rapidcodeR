@@ -64,8 +64,7 @@ track_progress <- function(df, index, total_tasks, n_post, batch_size, provider,
       result <- main_func(df, to_code_max_id, n_post, provider, worker_env = worker_env)
     }
     else {
-      message("Please specify whether provider is 'OpenAI' or 'Groq'")
-      stop()
+      stop("Please specify whether provider is 'OpenAI' or 'Groq'")
     }
     if (verbose) message("Finished task ", index)
     return(result)

@@ -4,20 +4,27 @@
 \alias{calculate_overlap}
 \title{Calculate Inter-Rater Agreement Across Multiple Datasets}
 \usage{
-calculate_overlap(datasets, alpha = FALSE)
+calculate_overlap(datasets, alpha = FALSE, key_cols = NULL)
 }
 \arguments{
 \item{datasets}{List. A list of data frames to compare. Each data frame should
-have the same structure with variable columns (Var1, Var2, etc.).}
+have the same column structure with variable columns (Var1, Var2, etc.).}
 
 \item{alpha}{Logical. If TRUE, also compute Krippendorff's Alpha (nominal)
 for each variable across the provided datasets. Defaults to FALSE.}
+
+\item{key_cols}{Character vector or NULL. Column name(s) used to match rows
+across datasets. Use this when datasets have different row counts due to a
+compound row identity (e.g. \code{key_cols = c("Var1", "Var3")}). Rows with
+NA in any key column are dropped before matching. When NULL (default), rows
+are matched on the first column only, which is the standard behaviour for
+single-response output from \code{parallel_execute()}.}
 }
 \value{
 Matrix. If alpha = FALSE: one-row matrix with average percentage
 agreement for each variable (columns), rounded to 2 decimals.
 If alpha = TRUE: two-row matrix with row "Overlap" (percent agreement)
-and row "Alpha" (Krippendorff's Alpha for nominal data; 0-1), rounded
+and row "Alpha" (Krippendorff's Alpha for nominal data), rounded
 to 3 decimals for Alpha.
 }
 \description{
@@ -29,29 +36,26 @@ systems/raters.
 \details{
 The function performs comprehensive overlap analysis:
 \itemize{
-\item Finds common IDs across all datasets to ensure fair comparison
-\item Aligns datasets by ID and uses all columns for comparison
+\item Finds common rows across all datasets based on \code{key_cols}
+\item Aligns and sorts datasets by the key before comparing
 \item Calculates pairwise agreement for all possible dataset combinations
 \item Computes variable-wise agreement percentages
 \item Returns average agreement across all dataset pairs
 }
 
-The function expects exactly the same data structure as produced by the
-main processing functions: N coded variables (Var1-VarN).
 Agreement is calculated as the percentage of cases where values match exactly.
+The number of rows used in the comparison is printed as a message (\code{N = ...}).
 }
 \examples{
 \dontrun{
-# Compare three processing runs
+# Standard use: compare two processing runs (single-response output)
 run1 <- parallel_execute(my_data, slicing_n = 100, cores = 4)
 run2 <- parallel_execute(my_data, slicing_n = 100, cores = 4)
-# Switch to GROQ for comparison
-set_api_specs(provider = "Groq", model = "llama-3.3-70b-versatile",
-  temp = 0.3, api_key = "your_groq_key")
-run3 <- parallel_execute(my_data, slicing_n = 100, cores = 4)
+calculate_overlap(list(run1, run2))
 
-overlap_scores <- calculate_overlap(list(run1, run2, run3))
-# Returns vector like: c(Var1 = 85.6, Var2 = 92.1, ...)
+# Multi-response output: datasets may differ in row count;
+# match on compound key (e.g. speech ID + paragraph number)
+calculate_overlap(list(run1, run2), key_cols = c("Var1", "Var3"))
 }
 
 }

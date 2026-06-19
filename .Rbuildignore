@@ -9,3 +9,6 @@
 ^\.github$
 ^docs$
 ^rapidcodeR\.Rproj$
+^cran-comments\.md$
+^CRAN-SUBMISSION$
+^\.claude$
